@@ -41,3 +41,15 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Background
+    uniqueID: 629797171
+    locked: 0
+  - name: Shadow
+    uniqueID: 3380355231
+    locked: 0
+  - name: SceneObj
+    uniqueID: 732610489
+    locked: 0
+  - name: Player
+    uniqueID: 3208580435
+    locked: 0

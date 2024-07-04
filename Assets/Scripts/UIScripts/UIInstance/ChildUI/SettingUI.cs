@@ -65,7 +65,6 @@ public class SettingUI : UIBase
         GameSave gameSave = GameManager.Instance.GetSave();
         _soundButton.Init("SoundButton", _transform, gameSave.musicSetting);
         _motivationalButton.Init("MotivationalButton", _transform, gameSave.motivationalSetting);
-
     }
     private void SwitchList()
     {
