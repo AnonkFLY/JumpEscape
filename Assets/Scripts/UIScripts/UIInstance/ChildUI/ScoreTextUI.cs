@@ -11,6 +11,14 @@ public class ScoreTextUI : MonoBehaviour
     private TMP_Text _motivationalText;
     private TMP_Text _scoreText;
 
+    public void Init()
+    {
+        Transform _trans = transform;
+        _scoreValueMaxCanvesText = _trans.Find("ScoreValueMax").GetComponent<TMP_Text>();
+        _scoreValueMaxCanvesGroup = _scoreValueMaxCanvesText.GetComponent<CanvasGroup>();
+        _motivationalText = _trans.Find("MotivationalText").GetComponent<TMP_Text>();
+        _scoreText = _trans.Find("ScoreText").GetComponent<TMP_Text>();
+    }
     public void SetCurrentScore(int score)
     {
         _scoreText.text = score.ToString();
@@ -30,6 +38,14 @@ public class ScoreTextUI : MonoBehaviour
     public void OpenMaxScore()
     {
         _scoreValueMaxCanvesGroup.DOFade(1, 0.4f);
-        _scoreText.text = "";
+    }
+    public void CloseCurrentScore()
+    {
+        _scoreText.DOFade(0, 0.4f);
+    }
+    public void OpenCurrentScore()
+    {
+        SetCurrentScore(0);
+        _scoreText.DOFade(1, 0.4f);
     }
 }

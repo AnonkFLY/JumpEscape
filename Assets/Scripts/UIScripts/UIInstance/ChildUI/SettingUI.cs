@@ -50,6 +50,7 @@ public class SettingButton
 
 public class SettingUI : UIBase
 {
+    [SerializeField] private bool noList = false;
     [SerializeField] private SettingButton _soundButton;
     [SerializeField] private SettingButton _motivationalButton;
     //private Button settingButton;
@@ -62,13 +63,18 @@ public class SettingUI : UIBase
     private void Start()
     {
         _transform.Find("SettingButton").GetComponent<Button>().onClick.AddListener(SwitchList);
+        if (noList)
+            return;
         GameSave gameSave = GameManager.Instance.GetSave();
         _soundButton.Init("SoundButton", _transform, gameSave.musicSetting);
         _motivationalButton.Init("MotivationalButton", _transform, gameSave.motivationalSetting);
     }
     private void SwitchList()
     {
+        if (noList)
+            return;
         _listOpen = !_listOpen;
+
         _motivationalButton.SetPosState(_listOpen);
         _soundButton.SetPosState(_listOpen);
     }
@@ -77,13 +83,16 @@ public class SettingUI : UIBase
         if (!_rectTransforom)
             _rectTransforom = transform.GetComponent<RectTransform>();
         _rectTransforom.localScale = open ? Vector3.zero : Vector3.one;
+
         float timer1 = open ? effectTimer * .8f : effectTimer * .2f;
         float timer2 = open ? effectTimer * .2f : effectTimer * .8f;
-
+        if(_listOpen)
+        {
+            SwitchList();
+        }
         _rectTransforom.DOScale(effectScale, timer1).SetEase(Ease.OutQuad).OnComplete(() =>
         {
             _rectTransforom.DOScale(open ? Vector3.one : Vector3.zero, timer2).SetEase(Ease.InQuad);
-
         });
     }
 }

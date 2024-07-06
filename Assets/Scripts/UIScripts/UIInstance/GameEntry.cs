@@ -7,13 +7,7 @@ using UnityEngine.UI;
 public class GameEntry : MonoBehaviour
 {
 
-    private void Start()
-    {
-        //
-        UIManager.Instance.PreLoadUI("GamePlayerUI");
-        
-    }
-    //TODO:播放动画,结束后销毁
+    //Animator event
     public void StartOver()
     {
         UIManager.Instance.Open("GamePlayerUI");

@@ -24,7 +24,7 @@ public class ScoreBarValue
         _barImage = _rectTransform.GetComponent<Image>();
         _tagRectTransform = rectTransform.Find("ValueTag").GetComponent<RectTransform>();
         _tagCanvas = _tagRectTransform.GetComponent<CanvasGroup>();
-        _tagImage = _tagRectTransform.GetComponent<Image>();
+        _tagImage = _tagRectTransform.Find("Rect").GetComponent<Image>();
         _TagTrImage = _tagRectTransform.Find("TrImage").GetComponent<Image>();
         _originPos = _tagRectTransform.localPosition;
         _text = _tagRectTransform.Find("TextValue").GetComponent<TMP_Text>();
@@ -35,19 +35,32 @@ public class ScoreBarValue
     }
     public void CloseTag()
     {
-        _tagCanvas.DOFade(0, 0.3f);
+        if (_tagCanvas)
+            _tagCanvas.alpha = 0;
     }
     public void ShowTag()
     {
-        _tagCanvas.DOFade(1, 0.3f);
+        if (_tagCanvas)
+            _tagCanvas.alpha = 1;
     }
     public void SetValue(float value)
     {
+        if(value<=0)
+        {
+            CloseTag();
+            return;
+        }
+        else
+        {
+            ShowTag();
+        }
         _value = value;
         int valueInt = (int)(value * 100.0f);
         _barImage.fillAmount = value;
-        _tempValue.x = _rectTransform.rect.x * value;
-        _tagRectTransform.localPosition = _originPos - _tempValue;
+        _tempValue.x = _rectTransform.rect.width * value;
+        _tagRectTransform.localPosition = _originPos + _tempValue;
+
+        //Debug.Log($"{value}->{_originPos}[{_tempValue}/{_rectTransform.rect.x}]=>{_tagRectTransform.localPosition}");
         _text.text = $"{valueInt}%";
     }
     public void SetColor(Color color)
@@ -69,7 +82,11 @@ public class ScoreBarUI : MonoBehaviour
     private Image _nextLevelTailOutline;
     private TMP_Text _nextLevelText;
     private TMP_Text _currentLevelText;
-    private void Start()
+
+    public ScoreBarValue MaxScoreBar { get => _maxScoreBar; }
+    public ScoreBarValue CurrentScoreBar { get => _currentScoreBar; }
+
+    public void Init()
     {
         _transform = transform;
         _currentScoreBar.Init(_transform.Find("ScoreLineValue").GetComponent<RectTransform>());
@@ -83,9 +100,7 @@ public class ScoreBarUI : MonoBehaviour
         _nextLevelText = levelTailTrans.Find("NextLevelText").GetComponent<TMP_Text>();
 
         _currentLevelText = _levelHeadImage.GetComponentInChildren<TMP_Text>();
-        //Test
-        _maxScoreBar.SetValue(0.8f);
-        _currentScoreBar.SetValue(0.3f);
+
     }
 
     public void SetLevel(int level)
