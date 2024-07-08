@@ -14,6 +14,7 @@ public class ScoreBarValue
     private Image _barImage;
     private Image _tagImage;
     private Image _TagTrImage;
+    private Image _maskImage;
     private TMP_Text _text;
     private Vector2 _originPos;
     private CanvasGroup _tagCanvas;
@@ -22,7 +23,8 @@ public class ScoreBarValue
     {
         _rectTransform = rectTransform;
         _barImage = _rectTransform.GetComponent<Image>();
-        _tagRectTransform = rectTransform.Find("ValueTag").GetComponent<RectTransform>();
+        _tagRectTransform = _rectTransform.Find("ValueTag").GetComponent<RectTransform>();
+        _maskImage = _rectTransform.Find("Mask").Find("OutlineMask").GetComponent<Image>(); ;
         _tagCanvas = _tagRectTransform.GetComponent<CanvasGroup>();
         _tagImage = _tagRectTransform.Find("Rect").GetComponent<Image>();
         _TagTrImage = _tagRectTransform.Find("TrImage").GetComponent<Image>();
@@ -45,7 +47,7 @@ public class ScoreBarValue
     }
     public void SetValue(float value)
     {
-        if(value<=0)
+        if (value <= 0)
         {
             CloseTag();
             return;
@@ -68,6 +70,7 @@ public class ScoreBarValue
         _barImage.color = color;
         _tagImage.color = color;
         _TagTrImage.color = color;
+        _maskImage.color = color;
     }
 }
 

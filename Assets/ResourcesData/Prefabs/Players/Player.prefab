@@ -597,9 +597,9 @@ CircleCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: -0.25}
+  m_Offset: {x: 0, y: -0.35}
   serializedVersion: 2
-  m_Radius: 0.3
+  m_Radius: 0.15
 --- !u!95 &2235045615755735426
 Animator:
   serializedVersion: 5
@@ -633,16 +633,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2250723749c1dac409b1033d67291171, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  unconqueredState: 0
   maxPlayerLife: 2
   currentPlayerLife: 2
   maxArmor: 0
   currentArmor: 0
   downSpeed: 9
-  driftSpeed: 9
-  addMaxSpeed: 11
-  addSpeed: 10
+  speed: 7.5
+  addMaxSpeed: 12
+  addSpeed: 20
   changeSpeed: 2
   _faceStyleSprites: []
+  winState: 0
 --- !u!50 &2778136125620066815
 Rigidbody2D:
   serializedVersion: 4

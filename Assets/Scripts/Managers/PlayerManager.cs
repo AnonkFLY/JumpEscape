@@ -61,6 +61,7 @@ public class BodyController
 
 public class PlayerManager : MonoBehaviour
 {
+    public bool unconqueredState = false;
     private TrailRenderer _trailRenderer;
     private BodyController _bodyController = new BodyController();
     [Header("Paramaters")]
@@ -71,7 +72,7 @@ public class PlayerManager : MonoBehaviour
     //下降速度
     [SerializeField] private float downSpeed = 10.0f;
     //左右正常最大速度
-    [SerializeField] private float driftSpeed = 7.5f;
+    [SerializeField] private float speed = 7.5f;
     //加速后最大速度
     [SerializeField] private float addMaxSpeed = 12.0f;
     //加速度
@@ -79,9 +80,9 @@ public class PlayerManager : MonoBehaviour
     //转向插值
     [SerializeField] private float changeSpeed = 2.0f;
 
-    //当前最大速度
-    private float currentMaxSpeed;
-    private Vector3 currentSpeed;
+    //当前允许的最大速度
+    private float _currentMaxSpeed;
+    private Vector3 _currentSpeed;
 
     [Header("FaceSprites")]
     [SerializeField] private Sprite[] _faceStyleSprites;
@@ -93,6 +94,7 @@ public class PlayerManager : MonoBehaviour
     //是否存活
     private bool _isLive = true;
     private bool _isClickState = false;
+    public bool winState = false;
 
     private int _direction = -1;
 
@@ -109,33 +111,38 @@ public class PlayerManager : MonoBehaviour
 
         ResetState();
     }
+    public BodyController GetBodyController() { return _bodyController; }
+    public void SetTrailColor(Color color)
+    {
+        _trailRenderer.startColor = color;
+    }
     private void SpeedCorrection()
     {
-        if (currentSpeed.x * _direction < 0)
+        if (_currentSpeed.x * _direction < 0)
         {
-            currentSpeed.x = Mathf.Lerp(currentSpeed.x, currentMaxSpeed * _direction, changeSpeed * Time.deltaTime);
+            _currentSpeed.x = Mathf.Lerp(_currentSpeed.x, _currentMaxSpeed * _direction, changeSpeed * Time.deltaTime);
         }
         else
         {
-            currentSpeed.x += (_isClickState ? addSpeed * 1.2f : addSpeed) * Time.deltaTime * _direction;
+            _currentSpeed.x += (_isClickState ? addSpeed * 1.2f : addSpeed) * Time.deltaTime * _direction;
         }
 
-        if (_direction == 1 && currentSpeed.x >= currentMaxSpeed)
+        if (_direction == 1 && _currentSpeed.x >= _currentMaxSpeed)
         {
-            currentSpeed.x = currentMaxSpeed;
+            _currentSpeed.x = _currentMaxSpeed;
         }
-        else if (_direction == -1 && currentSpeed.x <= -currentMaxSpeed)
+        else if (_direction == -1 && _currentSpeed.x <= -_currentMaxSpeed)
         {
-            currentSpeed.x = -currentMaxSpeed;
+            _currentSpeed.x = -_currentMaxSpeed;
         }
     }
     private void Update()
     {
         if (_isLive && _activeState)
         {
-            currentMaxSpeed = _isClickState ? addMaxSpeed : driftSpeed;
+            _currentMaxSpeed = _isClickState ? addMaxSpeed : speed;
             SpeedCorrection();
-            _transform.Translate(currentSpeed * Time.deltaTime);
+            _transform.Translate(_currentSpeed * Time.deltaTime);
         }
     }
     public bool IsAlive()
@@ -149,6 +156,7 @@ public class PlayerManager : MonoBehaviour
     //重置状态回到起点
     public void ResetState()
     {
+        Camera.main.GetComponent<CameraManager>().Locked();
         _bodyGameObject.SetActive(true);
         _direction = -1;
         _transform.position = Vector3.zero;
@@ -156,10 +164,11 @@ public class PlayerManager : MonoBehaviour
         currentArmor = maxArmor;
         _isLive = true;
         _activeState = false;
+        winState = false;
         _trailRenderer.Clear();
-        currentSpeed.y = -downSpeed;
-        currentSpeed.x = 0;
-        currentMaxSpeed = driftSpeed;
+        _currentSpeed.y = -downSpeed;
+        _currentSpeed.x = 0;
+        _currentMaxSpeed = speed;
         StopState();
     }
     //激活状态->开滑！
@@ -180,6 +189,7 @@ public class PlayerManager : MonoBehaviour
     {
         _bodyGameObject.SetActive(true);
         Vector3 pos = _transform.position;
+        _currentSpeed.x = 0;
         pos.x = 0;
         _transform.position = pos;
         _activeState = false;
@@ -204,6 +214,8 @@ public class PlayerManager : MonoBehaviour
     /// <param name="hurtType">场景伤害不可被护盾减免</param>
     public void PlayerHurt(DamageType hurtType = DamageType.EntityDamage, GameObject damageOrigin = null)
     {
+        if (winState || unconqueredState)
+            return;
         Debug.Log("DEAD");
 
         if (currentArmor > 0 && hurtType == DamageType.EntityDamage)
@@ -229,7 +241,7 @@ public class PlayerManager : MonoBehaviour
     }
     public void OnClick(bool onClick)
     {
-        if (!_isLive || !_activeState)
+        if (!_isLive || !_activeState || winState)
             return;
         _isClickState = onClick;
         if (onClick)
@@ -237,4 +249,5 @@ public class PlayerManager : MonoBehaviour
             Turning();
         }
     }
+
 }

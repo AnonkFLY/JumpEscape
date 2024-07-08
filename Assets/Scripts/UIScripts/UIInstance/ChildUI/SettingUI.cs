@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting.Antlr3.Runtime.Tree;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 
@@ -18,6 +19,7 @@ public class SettingButton
     private ButtonState _state;
     public RectTransform _rectTransform;
     Vector2 _originPosition;
+    public event UnityAction<bool> onClick;
     public void Init(string name, Transform transform, ButtonState state)
     {
         _button = transform.Find(name).GetComponent<Button>();
@@ -37,6 +39,7 @@ public class SettingButton
     private void ButtonEvent()
     {
         SetState(!_state.isPressed);
+        onClick?.Invoke(_state.isPressed);
     }
     private void SetState(bool state)
     {
@@ -53,6 +56,7 @@ public class SettingUI : UIBase
     [SerializeField] private bool noList = false;
     [SerializeField] private SettingButton _soundButton;
     [SerializeField] private SettingButton _motivationalButton;
+    [SerializeField] private SettingButton _languageButton;
     //private Button settingButton;
     private RectTransform _rectTransforom;
     [Header("Animation")]
@@ -60,6 +64,7 @@ public class SettingUI : UIBase
     [SerializeField] private float effectTimer = 1.0f;
 
     private bool _listOpen = false;
+    public event UnityAction onClick;
     private void Start()
     {
         _transform.Find("SettingButton").GetComponent<Button>().onClick.AddListener(SwitchList);
@@ -68,6 +73,14 @@ public class SettingUI : UIBase
         GameSave gameSave = GameManager.Instance.GetSave();
         _soundButton.Init("SoundButton", _transform, gameSave.musicSetting);
         _motivationalButton.Init("MotivationalButton", _transform, gameSave.motivationalSetting);
+        _languageButton.Init("LanguageButton", _transform, gameSave.isChinese);
+        _languageButton.onClick += GameManager.Instance.ChangeLanguage;
+        _soundButton.onClick += ChangeMusic;
+    }
+
+    public void ChangeMusic(bool open)
+    {
+        AudioManager.Instance.SetMusic(open);
     }
     private void SwitchList()
     {
@@ -77,16 +90,18 @@ public class SettingUI : UIBase
 
         _motivationalButton.SetPosState(_listOpen);
         _soundButton.SetPosState(_listOpen);
+        _languageButton.SetPosState(_listOpen);
     }
     public override void Switch(bool open, float fadeTime)
     {
+        onClick?.Invoke();
         if (!_rectTransforom)
             _rectTransforom = transform.GetComponent<RectTransform>();
         _rectTransforom.localScale = open ? Vector3.zero : Vector3.one;
 
         float timer1 = open ? effectTimer * .8f : effectTimer * .2f;
         float timer2 = open ? effectTimer * .2f : effectTimer * .8f;
-        if(_listOpen)
+        if (_listOpen)
         {
             SwitchList();
         }

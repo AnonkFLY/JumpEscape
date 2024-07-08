@@ -24,6 +24,7 @@ public class GamePlayerUI : UIBase
     public ScoreTextUI ScoreTextUIView { get => _scoreTextUI; }
 
     Image _maskImage;
+    //Image _maskImage2;
 
     private PlayerManager _playerManager;
 
@@ -44,15 +45,33 @@ public class GamePlayerUI : UIBase
         _blackTransitionsCanvesGroup = _transform.Find("BlackTransitions").GetComponent<CanvasGroup>();
         _guideImagesCanvesGroup = _transform.Find("GuideImagesCanves").GetComponent<CanvasGroup>();
 
-        _maskImage = _scoreBarUI.transform.Find("ScoreLineValue").Find("Mask").Find("OutlineMask").GetComponent<Image>();
+        //_maskImage = _scoreBarUI.transform.Find("ScoreLineValue").Find("Mask").Find("OutlineMask").GetComponent<Image>();
+        _maskImage = _scoreBarUI.transform.Find("ScoreLineValueMax").Find("Mask").Find("OutlineMask").GetComponent<Image>();
         InputHandler.Instance.onClickEvent += OnClick;
 
         _respawnCanvesGroup = _transform.Find("RespawnTimer").GetComponent<CanvasGroup>();
         _respawnText = _respawnCanvesGroup.GetComponent<TMP_Text>();
+
         _respawnButton = _respawnText.GetComponentInChildren<Button>();
 
         _respawnButton.onClick.AddListener(RespawnPlayer);
+        GameManager.Instance.onLanguageChange += ChangeLanguage;
+
+        var texts = _guideImagesCanvesGroup.GetComponentsInChildren<TMP_Text>();
+        _clickText = texts[0];
+        _longClickText = texts[1];
+
     }
+    private TMP_Text _clickText;
+    private TMP_Text _longClickText;
+
+    private void ChangeLanguage(LanguageType isChinese)
+    {
+        _respawnButton.GetComponentInChildren<TMP_Text>().text = GameManager.Instance.GetLanguage(LanguageKey.Revieve);
+        _clickText.text = GameManager.Instance.GetLanguage(LanguageKey.QuickPress);
+        _longClickText.text = GameManager.Instance.GetLanguage(LanguageKey.LongPress);
+    }
+
     private void RespawnPlayer()
     {
         _playerManager.Respawn();
@@ -80,19 +99,29 @@ public class GamePlayerUI : UIBase
             StartCoroutine(DelayResetUI());
         }
     }
-    IEnumerator DelayResetUI()
+    public IEnumerator DelayResetUI()
     {
         yield return new WaitForSeconds(1.5f);
         ResetUI();
     }
-    private void ResetUI()
+    public void ResetUI(bool win = false)
     {
         var cm = Camera.main.GetComponent<CameraManager>();
         cm.UnLock();
+        cm.transform.DOMoveY(cm.transform.position.y + 10.0f, 1.0f);
         _whiteTransitionsImage.raycastTarget = true;
-        _whiteTransitionsImage.DOFade(1.0f, 1.0f);
-        cm.transform.DOMoveY(cm.transform.position.y + 10.0f, 1.0f).OnComplete(() =>
+        _whiteTransitionsImage.DOFade(1.0f, 1.0f).OnComplete(() =>
         {
+            GameManager.Instance.NextLevel();
+            _scoreTextUI.CloseCurrentScore();
+            _playerManager.ResetState();
+            _scoreBarUI.CurrentScoreBar.SetValue(0);
+            GameManager.Instance.UpdateSceneManagerAndUI();
+
+            cm.Locked();
+            _settingButton.Open();
+            _storeButton.Open();
+            _scoreBarUI.CurrentScoreBar.SetValue(0);
             _whiteTransitionsImage.DOFade(0.0f, 1.0f).OnComplete(() =>
             {
                 _whiteTransitionsImage.raycastTarget = false;
@@ -101,11 +130,7 @@ public class GamePlayerUI : UIBase
                     playing = false;
                 });
             });
-            _playerManager.ResetState();
-            cm.Locked();
-            _settingButton.Open();
-            _storeButton.Open();
-            _scoreBarUI.CurrentScoreBar.SetValue(0);
+
         });
 
 
@@ -157,6 +182,7 @@ public class GamePlayerUI : UIBase
         _scoreBarUI.SetColor(color);
 
         _maskImage.color = color;
+        //_maskImage2.color = color;
     }
     /// <summary>
     /// 
@@ -195,14 +221,15 @@ public class GamePlayerUI : UIBase
         }
 
 
-        ScoreTextUIView.CloseMaxScore();
-        ScoreTextUIView.OpenCurrentScore();
+        _scoreTextUI.CloseMaxScore();
+        _scoreTextUI.OpenCurrentScore();
 
         //var player = GameManager.Instance.GetMainPlayer();
         _playerManager.ActiveState();
     }
     public override UIBase Open()
     {
+        _settingButton.ChangeMusic(GameManager.Instance.GetGameSave().musicSetting);
         _blackImage.color = Color.black;
         _blackImage.DOFade(0, 1.8f);
         _whiteTransitionsImage.DOFade(1, 0.8f).OnComplete(() =>

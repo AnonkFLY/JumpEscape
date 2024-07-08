@@ -7,6 +7,7 @@ using UnityEngine;
 public class ScoreTextUI : MonoBehaviour
 {
     private CanvasGroup _scoreValueMaxCanvesGroup;
+    private RectTransform _motivationRectTrans;
     private TMP_Text _scoreValueMaxCanvesText;
     private TMP_Text _motivationalText;
     private TMP_Text _scoreText;
@@ -17,7 +18,9 @@ public class ScoreTextUI : MonoBehaviour
         _scoreValueMaxCanvesText = _trans.Find("ScoreValueMax").GetComponent<TMP_Text>();
         _scoreValueMaxCanvesGroup = _scoreValueMaxCanvesText.GetComponent<CanvasGroup>();
         _motivationalText = _trans.Find("MotivationalText").GetComponent<TMP_Text>();
+        _motivationRectTrans = _motivationalText.GetComponent<RectTransform>();
         _scoreText = _trans.Find("ScoreText").GetComponent<TMP_Text>();
+        GameManager.Instance.onMotivational += MotivationalEffect;
     }
     public void SetCurrentScore(int score)
     {
@@ -27,9 +30,26 @@ public class ScoreTextUI : MonoBehaviour
     {
         _scoreValueMaxCanvesText.text = score.ToString();
     }
+    private int lastLevele = 0;
     public void MotivationalEffect(int motivationalLevel)
     {
-
+        if (lastLevele == motivationalLevel)
+            return;
+        lastLevele = motivationalLevel;
+        if (motivationalLevel > 1)
+        {
+            //TODO:µ¯³öÏÔÊ¾
+            _motivationalText.text = GameManager.Instance.GetLanguage(LanguageKey.MotivationValue_1 + motivationalLevel - 2);
+            _motivationRectTrans.localScale = Vector3.one * 0.4f;
+            _motivationalText.rectTransform.DOScale(Vector3.one * 1.2f, 0.24f).OnComplete(() =>
+            {
+                _motivationalText.rectTransform.DOScale(Vector3.one, 0.1f);
+            });
+        }
+        else
+        {
+            _motivationalText.text = "";
+        }
     }
     public void CloseMaxScore()
     {
@@ -41,7 +61,7 @@ public class ScoreTextUI : MonoBehaviour
     }
     public void CloseCurrentScore()
     {
-        _scoreText.DOFade(0, 0.4f);
+        _scoreText.alpha = 0;
     }
     public void OpenCurrentScore()
     {

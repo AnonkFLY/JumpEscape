@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 0}
+  m_Name: LanguageData
+  m_EditorClassIdentifier: Assembly-CSharp::LanguageScriptobject
+  datas:
+  - datas:
+    - Quick Press
+    - Long Press
+    - Revieve
+    - Level {0} Complete !
+    - Crazy Mode
+    - Normal Mode
+    - Good job!
+    - Yeah!
+    - Smooth!
+    - Awesome!
+    - Wow!
+    - Chilly!
+    - What a style!
+    - Incredible!
+    - Amazing!
+    - Exquisite!
+    - King of the mountain!
+    - Unstoppable!
+    - Mountain is yours!
+    - Chilly Snow master!
+    - You're on fire!
+    type: 0
+  - datas:
+    - "\u77ED\u6309"
+    - "\u957F\u6309"
+    - "\u590D\u6D3B"
+    - "\u5173\u5361{0}\u5B8C\u6210 "
+    - "\u75AF\u72C2\u6A21\u5F0F"
+    - "\u6B63\u5E38\u6A21\u5F0F"
+    - "\u5E72\u5F97\u597D\uFF01"
+    - "\u5389\u5BB3\uFF01"
+    - "\u6F02\u4EAE\uFF01"
+    - "\u5E05\u6C14\uFF01"
+    - "\u7CBE\u5F69\uFF01"
+    - "\u8D85\u5389\u5BB3\uFF01"
+    - "\u5927\u5E08\u7EA7\u64CD\u4F5C\uFF01"
+    - "\u5B8C\u7F8E\u65E0\u7F3A\uFF01"
+    - "\u60CA\u5929\u52A8\u5730\uFF01"
+    - "\u7B80\u76F4\u4E0D\u53EF\u80FD!"
+    - "\u96EA\u5730\u4E4B\u795E\uFF01"
+    - "\u4E0D\u53EF\u8D85\u8D8A\uFF01"
+    - "\u4F60\u5F81\u670D\u4E86\u5927\u5C71\uFF01"
+    - "\u795E\u4E4B\u624B\uFF01"
+    - "\u840C\u738B\u9644\u4F53\uFF01"
+    type: 1

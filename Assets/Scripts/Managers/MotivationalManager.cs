@@ -6,9 +6,10 @@ using UnityEngine;
 public class MotivationalManager
 {
     //rating效果只持续3s
-    private readonly float ratingTimer = 3f;
+    private readonly float ratingEffectTimer = 2f;
+    public float ratingTimer = 0.0f;
     //得分
-    public int currentRating = 0;
+    public int currentRating = 1;
     public int currentScore = 0;
     public int scoreRequire = 0;
 
@@ -17,13 +18,27 @@ public class MotivationalManager
     /// </summary>
     /// <param name="score">score value</param>
     /// <param name="scoreLevel">score level,level 0 not add rating</param>
-    public void AddScore(int score, int scoreLevel = 0)
+    public int AddScore(int score, int scoreLevel = 0)
     {
         if (scoreLevel == 0)
         {
             currentScore += score;
-            return;
+            return currentRating;
         }
+        ++currentRating;
+        if (currentRating > 16)
+        {
+            currentRating = 16;
+        }
+        if (ratingTimer <= 0)
+        {
+            currentRating = 1;
+        }
+        ratingTimer = ratingEffectTimer;
+        currentScore += score * currentRating;
+        Debug.Log("Add score " + score * currentRating);
+
+        return currentRating;
     }
     public float GetPercentage()
     {

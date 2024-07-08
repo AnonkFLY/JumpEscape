@@ -4,17 +4,17 @@ using UnityEngine;
 
 public abstract class SceneEntityPool<T> : SceneEntity where T : SceneEntityPool<T>
 {
-    protected List<T> _cacheObjects = new List<T>();
+    protected static List<T> _cacheObjects = new List<T>();
     protected Transform _transform;
 
-    public virtual void Create(LevelConfig levelConfig, PlayerManager playerManager)
+    public virtual void Create(LevelConfig levelConfig, PlayerManager playerManager, SceneManager sceneManager)
     {
         T obj = GetObject();
         if (obj == null)
         {
             obj = GameObject.Instantiate(gameObject, GameManager.Instance.GetSceneManager().Transform).GetComponent<T>();
         }
-        obj.Init(levelConfig, playerManager);
+        obj.Init(levelConfig, playerManager, sceneManager);
     }
     protected T GetObject()
     {
@@ -23,6 +23,7 @@ public abstract class SceneEntityPool<T> : SceneEntity where T : SceneEntityPool
             return null;
         }
         T obj = _cacheObjects[_cacheObjects.Count - 1];
+        obj.gameObject.SetActive(true);
         _cacheObjects.RemoveAt(_cacheObjects.Count - 1);
         return obj;
     }
@@ -30,5 +31,6 @@ public abstract class SceneEntityPool<T> : SceneEntity where T : SceneEntityPool
     {
         gameObject.SetActive(false);
         _cacheObjects.Add((T)this);
+        _transform.GetComponent<ICanDestroy>()?.Destroy();
     }
 }
