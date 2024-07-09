@@ -47,7 +47,7 @@ public class ScoreBarValue
     }
     public void SetValue(float value)
     {
-        if (value <= 0)
+        if (value < 0)
         {
             CloseTag();
             return;

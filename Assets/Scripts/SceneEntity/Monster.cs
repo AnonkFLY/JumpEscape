@@ -25,25 +25,31 @@ public class Monster : SceneEntityPool<Monster>, ICanDestroy
 
     public override void CreateEntitys(LevelConfig levelConfig, PlayerManager playerManager, SceneManager sceneManager)
     {
-        GameManager.Instance.StartCoroutine(StartCreateMonster(levelConfig, playerManager, sceneManager));
+        //GameManager.Instance.StartCoroutine(StartCreateMonster(levelConfig, playerManager, sceneManager));
+        int count = (int)(100 * levelConfig.diffcult);
+        //Debug.Log("Create count:" + count);
+        for (int i = 0; i < count; i++)
+        {
+            Create(levelConfig, playerManager, sceneManager);
+        }
     }
     private void OnSceneOver(SceneManager sceneManager)
     {
         DestroyEntity();
         sceneManager.onSceneInit -= OnSceneOver;
     }
-    [SerializeField]
-    private int[] diffCount = new int[5] { 135, 170, 190, 220, 300 };
-    IEnumerator StartCreateMonster(LevelConfig levelConfig, PlayerManager playerManager, SceneManager sceneManager)
-    {
-        int count = diffCount[(int)levelConfig.diffcult];
-        Debug.Log("Create count:" + count);
-        for (int i = 0; i < count; i++)
-        {
-            Create(levelConfig, playerManager, sceneManager);
-        }
-        yield return waitForEndOfFrame;
-    }
+    //[SerializeField]
+    //private int[] diffCount = new int[5] { 135, 170, 190, 220, 300 };
+    //IEnumerator StartCreateMonster(LevelConfig levelConfig, PlayerManager playerManager, SceneManager sceneManager)
+    //{
+    //    int count = (int)(100 * levelConfig.diffcult);
+    //    //Debug.Log("Create count:" + count);
+    //    for (int i = 0; i < count; i++)
+    //    {
+    //        Create(levelConfig, playerManager, sceneManager);
+    //    }
+    //    yield return waitForEndOfFrame;
+    //}
     private SpriteRenderer _head;
     private SpriteRenderer _face;
     public static int count = 0;
@@ -101,8 +107,9 @@ public class Monster : SceneEntityPool<Monster>, ICanDestroy
         int rating = GameManager.Instance.AddScore(addScore, 1);
 
         //TODO:Ð§¹û
+        AudioManager.Instance.PlaySoundEffect(1);
         _scoreText.text = (rating * addScore).ToString();
-        _scoreText.color = GameManager.Instance.GetRattingColor(rating);
+        _scoreText.color = GameManager.Instance.GetMotivationalColor(rating);
 
         Vector3 scale = _transform.localScale;
         _transform.DOScale(scale * 1.5f, 0.15f).OnComplete(() =>
@@ -118,7 +125,8 @@ public class Monster : SceneEntityPool<Monster>, ICanDestroy
             });
         });
         _effectSpriteRenderer.color = _originEffectAlpha;
-        _effectPoint.DOScale(Vector3.one * 1.6f, 0.65f).OnComplete(() =>
+        _effectSpriteRenderer.DOFade(0.1f, 3.0f);
+        _effectPoint.DOScale(Vector3.one * 2.2f, 0.65f).OnComplete(() =>
         {
             _effectSpriteRenderer.color = new Color(0, 0, 0, 0);
             _effectPoint.localScale = Vector3.one;
@@ -126,8 +134,6 @@ public class Monster : SceneEntityPool<Monster>, ICanDestroy
     }
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        print("Kill player");
-        //TODO:»÷É±Íæ¼Ò
         var player = collision.transform.GetComponent<PlayerManager>();
         if (player != null)
         {

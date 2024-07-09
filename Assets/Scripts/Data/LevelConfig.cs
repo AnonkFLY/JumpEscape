@@ -10,8 +10,6 @@ public class LevelConfig
     public Color color;
     //难度(float)
     public float diffcult;
-    //过关需求
-    public int levelScoreRequire;
     //关卡长度
     public float levelLength;
     public GameObject[] scenesEntitys;

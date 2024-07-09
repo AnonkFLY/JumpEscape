@@ -30,12 +30,12 @@ public class ScoreTextUI : MonoBehaviour
     {
         _scoreValueMaxCanvesText.text = score.ToString();
     }
-    private int lastLevele = 0;
+
     public void MotivationalEffect(int motivationalLevel)
     {
-        if (lastLevele == motivationalLevel)
+        if (!GameManager.Instance.GetGameSave().motivationalSetting)
             return;
-        lastLevele = motivationalLevel;
+
         if (motivationalLevel > 1)
         {
             //TODO:╣╞ЁЖотй╬

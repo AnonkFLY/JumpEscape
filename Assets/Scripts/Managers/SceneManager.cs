@@ -23,6 +23,7 @@ public class SceneManager
     private float addScoreTimer;
     private int addScoreValue;
     private LevelConfig _currentLevelConfig;
+    private ParticleSystem _endEffect;
     private int level = 0;
 
     public event UnityAction<SceneManager> onSceneOver;
@@ -36,7 +37,7 @@ public class SceneManager
         _levelTagText = _transform.Find("LevelTag").GetComponentInChildren<TMP_Text>();
         _endTransform = _transform.Find("End");
         _endText = _endTransform.GetComponentInChildren<TMP_Text>();
-
+        _endEffect = _endTransform.GetComponentInChildren<ParticleSystem>();
     }
     public void InitPlayer(PlayerManager playerManager)
     {
@@ -47,6 +48,8 @@ public class SceneManager
     }
     public void Update()
     {
+        if (!GameManager.Instance.InitDone)
+            return;
         if (_playerManager.IsAlive() && _playerManager.IsActive())
         {
             if (!_playerManager.winState)
@@ -78,14 +81,18 @@ public class SceneManager
     }
     private IEnumerator WinCoutine()
     {
-        Debug.Log("นýนุ");
+        Debug.Log("complete");
+        AudioManager.Instance.PlaySoundEffect(2);
+        _endEffect?.Play();
         levelStartTimer = 0;
         Camera.main.GetComponent<CameraManager>().UnLock();
         _playerManager.winState = true;
         for (int i = 0; i < 10; ++i)
         {
-            _playerManager.Turning();
-            yield return new WaitForSeconds(0.5f);
+            _playerManager.Turning(true);
+            yield return new WaitForSeconds(0.1f);
+            _playerManager.Turning(false);
+            yield return new WaitForSeconds(0.3f);
         }
         onSceneOver?.Invoke(this);
         _endText.text = "";

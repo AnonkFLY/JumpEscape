@@ -20,7 +20,12 @@ public class BodyController
     private SpriteRenderer _bootSpriteR;
     private Transform _bootTransSpriteR;
     private Sprite[] _faceStyleSprites;
-    public void Init(Transform bodyTrans, Sprite[] faceStyleSprites)
+
+    private ParticleSystem _deathEffect;
+    private ParticleSystem _footPrint;
+    private ParticleSystem _trailEffect;
+    private ParticleSystem _footPrintTurn;
+    public void Init(Transform bodyTrans, Sprite[] faceStyleSprites, Transform root)
     {
         _faceStyleSprites = faceStyleSprites;
         //_brimSpriteR = bodyTrans.Find("Brim").GetComponent<SpriteRenderer>();
@@ -29,13 +34,40 @@ public class BodyController
         _faceSpriteR = bodyTrans.Find("Face").GetComponent<SpriteRenderer>();
         _bootTransSpriteR = bodyTrans.Find("BootCenter");
         _bootSpriteR = _bootTransSpriteR.GetComponentInChildren<SpriteRenderer>();
+        _deathEffect = root.Find("DeathEffect").GetComponent<ParticleSystem>();
+        _footPrint = root.Find("FootPrint").GetComponent<ParticleSystem>();
+        _trailEffect = root.Find("TrailEffect").GetComponent<ParticleSystem>();
+        _footPrintTurn = _bootTransSpriteR.GetComponentInChildren<ParticleSystem>();
     }
     //body color
     public void SetMainColor(Color color)
     {
         _headSpriteR.color = color;
-        _faceSpriteR.color = color;
+        //_faceSpriteR.color = color;
         _bootSpriteR.color = color;
+
+        _deathEffect.startColor = color;
+        _trailEffect.startColor = color;
+        _footPrint.startColor = color;
+    }
+    public void TurningEffect(bool open)
+    {
+        if (open)
+            _footPrintTurn.Play();
+        else _footPrintTurn.Stop();
+    }
+    public void FootEffect(bool open)
+    {
+        if (open)
+        {
+            _footPrint.Play();
+            _trailEffect.Play();
+        }
+        else
+        {
+            _footPrint.Stop();
+            _trailEffect.Stop();
+        }
     }
     //hat color
     public void SetSecondColor(Color color)
@@ -56,6 +88,10 @@ public class BodyController
         Vector3 currentRotation = _bootTransSpriteR.eulerAngles;
         currentRotation.y = 180 * (direction == 1 ? 0 : 1);
         _bootTransSpriteR.eulerAngles = currentRotation;
+    }
+    public void DeathEffect()
+    {
+        _deathEffect.Play();
     }
 }
 
@@ -97,6 +133,7 @@ public class PlayerManager : MonoBehaviour
     public bool winState = false;
 
     private int _direction = -1;
+    private AudioSource _audioSource;
 
 
 
@@ -105,9 +142,12 @@ public class PlayerManager : MonoBehaviour
     {
         _transform = transform;
         _animator = GetComponent<Animator>();
+        _audioSource = GetComponent<AudioSource>();
+        _audioSource.Play();
+        _audioSource.Pause();
         _trailRenderer = GetComponentInChildren<TrailRenderer>();
         _bodyGameObject = _transform.Find("Body").gameObject;
-        _bodyController.Init(_bodyGameObject.transform, _faceStyleSprites);
+        _bodyController.Init(_bodyGameObject.transform, _faceStyleSprites, _transform);
 
         ResetState();
     }
@@ -169,6 +209,7 @@ public class PlayerManager : MonoBehaviour
         _currentSpeed.y = -downSpeed;
         _currentSpeed.x = 0;
         _currentMaxSpeed = speed;
+        OnMotivational(1);
         StopState();
     }
     //激活状态->开滑！
@@ -183,6 +224,8 @@ public class PlayerManager : MonoBehaviour
     {
         _animator.enabled = false;
         _activeState = false;
+        _bodyController.TurningEffect(false);
+        OnMotivational(1);
     }
     //复活在原地
     public void Respawn()
@@ -203,10 +246,22 @@ public class PlayerManager : MonoBehaviour
     //    currentMaxSpeed = addMaxSpeed;
     //}
     //转弯：改变方向
-    public void Turning()
+    public void Turning(bool onclick)
     {
-        _direction = -_direction;
-        _bodyController.ChangeLeg(_direction);
+        if (onclick)
+        {
+            _direction = -_direction;
+            _bodyController.ChangeLeg(_direction);
+            _bodyController.TurningEffect(true);
+            if (!winState)
+                _audioSource.UnPause();
+        }
+        else
+        {
+            _bodyController.TurningEffect(false);
+            _audioSource.Pause();
+        }
+
     }
     /// <summary>
     /// 受伤
@@ -216,7 +271,6 @@ public class PlayerManager : MonoBehaviour
     {
         if (winState || unconqueredState)
             return;
-        Debug.Log("DEAD");
 
         if (currentArmor > 0 && hurtType == DamageType.EntityDamage)
         {
@@ -225,17 +279,20 @@ public class PlayerManager : MonoBehaviour
             return;
         }
         //TODO:播放粒子效果
-
+        _bodyController.DeathEffect();
+        Turning(false);
+        AudioManager.Instance.PlaySoundEffect(0);
         //消失
         _bodyGameObject.SetActive(false);
         --currentPlayerLife;
         _isLive = false;
         _activeState = false;
+        GameManager.Instance.onMotivational(1);
 
-        if (currentPlayerLife <= 0)
-        {
-            GameManager.Instance.ResetScore();
-        }
+        //if (currentPlayerLife <= 0)
+        //{
+        //    GameManager.Instance.ResetScore();
+        //}
 
         deadEvent?.Invoke(currentPlayerLife);
     }
@@ -243,11 +300,34 @@ public class PlayerManager : MonoBehaviour
     {
         if (!_isLive || !_activeState || winState)
             return;
+
         _isClickState = onClick;
-        if (onClick)
-        {
-            Turning();
-        }
+
+        Turning(onClick);
     }
 
+    public void OnMotivational(int value)
+    {
+        if (value <= 1)
+        {
+            _bodyController.SetMainColor(GameManager.Instance.GetCurrentLevelColor());
+            SetTrailColor(GameManager.Instance.GetCurrentLevelColor());
+            _bodyController.FootEffect(false);
+        }
+        else if (value >= 3)
+        {
+            if (value == 3)
+            {
+                AudioManager.Instance.PlaySoundEffect(3);
+                Debug.Log("player ");
+            }
+            _bodyController.SetMainColor(GameManager.Instance.GetMotivationalColor(value));
+            SetTrailColor(GameManager.Instance.GetMotivationalColor(value));
+            _bodyController.FootEffect(false);
+            if (value > 4)
+            {
+                _bodyController.FootEffect(true);
+            }
+        }
+    }
 }

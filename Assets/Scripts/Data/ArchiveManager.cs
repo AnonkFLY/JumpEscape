@@ -32,7 +32,7 @@ public class ArchiveManager<T> where T : new()
     public void Load()
     {
         SetSavePath();
-        Debug.Log(savedPath);
+        //Debug.Log(savedPath);
         if (!File.Exists(savedPath))
         {
             using (var stream = File.Create(savedPath))
@@ -45,7 +45,7 @@ public class ArchiveManager<T> where T : new()
         using (var saved = File.OpenText(savedPath))
         {
             var jsonData = saved.ReadToEnd();
-            Debug.Log($"load {jsonData}");
+            //Debug.Log($"load {jsonData}");
             archiveObj = JsonUtility.FromJson<T>(jsonData);
             if (archiveObj == null)
                 archiveObj = new T();

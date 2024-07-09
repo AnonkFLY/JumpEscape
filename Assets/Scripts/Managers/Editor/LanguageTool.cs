@@ -1,69 +1,12 @@
 using ExcelDataReader;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-
-
-public enum LanguageKey
+public static class LanguageTool
 {
-    QuickPress,
-    LongPress,
-    Revieve,
-    LevelComplate,
-    CrazyMode,
-    NormalMode,
-    MotivationValue_1,
-    MotivationValue_2,
-    MotivationValue_3,
-    MotivationValue_4,
-    MotivationValue_5,
-    MotivationValue_6,
-    MotivationValue_7,
-    MotivationValue_8,
-    MotivationValue_9,
-    MotivationValue_10,
-    MotivationValue_11,
-    MotivationValue_12,
-    MotivationValue_13,
-    MotivationValue_14,
-    MotivationValue_15,
-}
-public enum LanguageType
-{
-    English,
-    Chinese,
-}
-[Serializable]
-public struct LanguageData
-{
-    public List<string> datas;
-    public LanguageType type;
-}
-public class LanguageScriptobject : ScriptableObject
-{
-    [SerializeField]
-    public List<LanguageData> datas = new List<LanguageData>();
-    public string GetLanguageStr(LanguageType type, LanguageKey key, params object[] para)
-    {
-        int typeInt = (int)type;
-        int keyInt = (int)key;
-        if (datas.Count > typeInt)
-        {
-            if (datas[typeInt].datas.Count > keyInt)
-            {
-                return string.Format(datas[typeInt].datas[keyInt], para);
-            }
-            else
-            {
-                return $"[No found key {key}]";
-            }
-        }
-        return $"[no found type {type}]";
-    }
     [MenuItem("Tools/Create Language File")]
     public static void CreateLanguageObject()
     {
@@ -107,6 +50,4 @@ public class LanguageScriptobject : ScriptableObject
 
         }
     }
-
 }
-

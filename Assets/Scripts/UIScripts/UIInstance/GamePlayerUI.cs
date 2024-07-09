@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -34,7 +35,7 @@ public class GamePlayerUI : UIBase
     public override void Init()
     {
         _settingButton = _transform.Find("SettingViewport").GetComponent<SettingUI>();
-        _storeButton = _transform.Find("StoreViewport").GetComponent<SettingUI>();
+        _storeButton = _transform.Find("QuitViewport").GetComponent<SettingUI>();
         _blackImage = _transform.Find("BlackImage").GetComponent<Image>();
         _scoreBarUI = _transform.Find("ScoreBar").GetComponent<ScoreBarUI>();
         _scoreBarUI.Init();
@@ -60,8 +61,16 @@ public class GamePlayerUI : UIBase
         var texts = _guideImagesCanvesGroup.GetComponentsInChildren<TMP_Text>();
         _clickText = texts[0];
         _longClickText = texts[1];
+        _storeButton.onClick += Quit;
 
     }
+
+    private void Quit()
+    {
+        GameManager.Instance.Save();
+        Application.Quit();
+    }
+
     private TMP_Text _clickText;
     private TMP_Text _longClickText;
 
@@ -114,10 +123,10 @@ public class GamePlayerUI : UIBase
         {
             GameManager.Instance.NextLevel();
             _scoreTextUI.CloseCurrentScore();
+            GameManager.Instance.UpdateSceneManagerAndUI();
             _playerManager.ResetState();
             _scoreBarUI.CurrentScoreBar.SetValue(0);
-            GameManager.Instance.UpdateSceneManagerAndUI();
-
+            _scoreBarUI.MaxScoreBar.SetValue(0);
             cm.Locked();
             _settingButton.Open();
             _storeButton.Open();
@@ -197,7 +206,7 @@ public class GamePlayerUI : UIBase
         ScoreTextUIView.SetCurrentScore(score);
         ScoreTextUIView.SetMaxScore(maxScore);
         ScoreBarUIView.SetLevel(level);
-        ScoreBarUIView.MaxScoreBar.SetValue(scoreRequire);
+        ScoreBarUIView.MaxScoreBar.SetValue(scoreRequire <= 0 ? -1 : scoreRequire);
         ScoreBarUIView.CurrentScoreBar.SetValue(currentP);
     }
     public void OnClick(bool click)
@@ -211,7 +220,6 @@ public class GamePlayerUI : UIBase
     }
     private void Play()
     {
-        Debug.Log("Play");
         playing = true;
         if (_playerManager.transform.position.y >= 0)
         {
