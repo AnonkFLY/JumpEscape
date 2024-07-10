@@ -81,7 +81,6 @@ public class Monster : SceneEntityPool<Monster>, ICanDestroy
             float randomX = Random.Range((int)(-15 / createInterval), (int)(15 / createInterval)) * createInterval;
             float randomY = Random.Range((int)(-15.0f / createInterval), (int)((-levelConfig.levelLength + 5.0f) / createInterval)) * createInterval;
             int valueLayer = (int)(-randomY * 100 % 30000);
-            Debug.Log(valueLayer);
             _head.sortingOrder = valueLayer;
             _face.sortingOrder = valueLayer + 1;
             pos = new Vector3(randomX, randomY, randomY * 0.01f);

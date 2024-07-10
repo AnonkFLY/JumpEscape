@@ -17,7 +17,6 @@ public class AudioManager : MonoBehaviour
     {
         Instance = this;
         bgmComponet = GetComponent<AudioSource>();
-        SetMusic(GameManager.Instance.GetGameSave().musicSetting);
     }
     public void PlaySoundEffect(int i)
     {

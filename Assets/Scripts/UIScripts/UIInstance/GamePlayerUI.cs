@@ -249,6 +249,8 @@ public class GamePlayerUI : UIBase
         _blackImage.DOFade(0, 1.8f);
         _whiteTransitionsImage.DOFade(1, 0.8f).OnComplete(() =>
         {
+            AudioManager.Instance.SetMusic(GameManager.Instance.GetGameSave().musicSetting);
+
             _whiteTransitionsImage.DOFade(0, 0.8f).OnComplete(() =>
             {
                 _whiteTransitionsImage.raycastTarget = false;

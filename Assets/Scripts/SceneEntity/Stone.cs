@@ -59,7 +59,7 @@ public class Stone : SceneEntityPool<Stone>
         _speed = new Vector2(Random.Range(minSpeed.x, maxSpeed.x), Random.Range(-minSpeed.y, -maxSpeed.y));
         _speed.x *= _direction;
 
-        _transform.position = new Vector2(_direction * -15f, Random.Range(-45.0f, -levelConfig.levelLength + 35.0f));
+        _transform.position = new Vector2(_direction * -15f, Random.Range(-25.0f, -levelConfig.levelLength + 25.0f));
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
