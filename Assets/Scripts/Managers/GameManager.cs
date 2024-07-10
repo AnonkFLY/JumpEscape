@@ -45,10 +45,15 @@ public class GameManager : MonoBehaviour
     public UnityAction<int> onMotivational;
     public bool InitDone = false;
     private float p;
+
+
+    public ButtonState unconqueredState = false;
     private void Awake()
     {
-        var test = FindObjectOfType<TestUI>();
-        test.Init();
+        //var test = FindObjectOfType<TestUI>();
+        //test.Init();
+        //var rect = Screen.safeArea;
+        //Debug.Log($"{rect}+{Screen.width},{Screen.height}");
         SingleInit();
         //Init Other
         PreLoadInit();
@@ -62,8 +67,8 @@ public class GameManager : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.W))
         {
-            _mainPlayer.unconqueredState = !_mainPlayer.unconqueredState;
-            Debug.Log("unconqueredState:" + _mainPlayer.unconqueredState);
+            unconqueredState = !unconqueredState;
+            Debug.Log("unconqueredState:" + unconqueredState);
         }
         UpdateScore();
     }

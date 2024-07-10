@@ -23,7 +23,7 @@ public class SceneManager
     private float addScoreTimer;
     private int addScoreValue;
     private LevelConfig _currentLevelConfig;
-    private ParticleSystem _endEffect;
+    private EndEffectSystem[] _endEffect;
     private int level = 0;
 
     public event UnityAction<SceneManager> onSceneOver;
@@ -37,7 +37,7 @@ public class SceneManager
         _levelTagText = _transform.Find("LevelTag").GetComponentInChildren<TMP_Text>();
         _endTransform = _transform.Find("End");
         _endText = _endTransform.GetComponentInChildren<TMP_Text>();
-        _endEffect = _endTransform.GetComponentInChildren<ParticleSystem>();
+        _endEffect = _endTransform.GetComponentsInChildren<EndEffectSystem>();
     }
     public void InitPlayer(PlayerManager playerManager)
     {
@@ -83,7 +83,10 @@ public class SceneManager
     {
         Debug.Log("complete");
         AudioManager.Instance.PlaySoundEffect(2);
-        _endEffect?.Play();
+        foreach (var item in _endEffect)
+        {
+            item.Play();
+        }
         levelStartTimer = 0;
         Camera.main.GetComponent<CameraManager>().UnLock();
         _playerManager.winState = true;

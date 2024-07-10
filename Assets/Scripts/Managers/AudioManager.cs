@@ -17,6 +17,7 @@ public class AudioManager : MonoBehaviour
     {
         Instance = this;
         bgmComponet = GetComponent<AudioSource>();
+        SetMusic(GameManager.Instance.GetGameSave().musicSetting);
     }
     public void PlaySoundEffect(int i)
     {
@@ -37,6 +38,7 @@ public class AudioManager : MonoBehaviour
     }
     public void SetMusic(bool open)
     {
+        this.open = open;
         if (open)
         {
             if (!bgmComponet.isPlaying)

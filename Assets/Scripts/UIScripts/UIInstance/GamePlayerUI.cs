@@ -34,6 +34,13 @@ public class GamePlayerUI : UIBase
     private CanvasGroup _respawnCanvesGroup;
     public override void Init()
     {
+
+        var rectTransform = _transform.GetComponent<RectTransform>();
+        var temp = rectTransform.anchoredPosition;
+        temp.y -= Screen.height - Screen.safeArea.height;
+        rectTransform.anchoredPosition = temp;
+
+        _transform.GetComponent<RectTransform>().anchoredPosition = temp;
         _settingButton = _transform.Find("SettingViewport").GetComponent<SettingUI>();
         _storeButton = _transform.Find("QuitViewport").GetComponent<SettingUI>();
         _blackImage = _transform.Find("BlackImage").GetComponent<Image>();

@@ -80,7 +80,10 @@ public class Monster : SceneEntityPool<Monster>, ICanDestroy
         {
             float randomX = Random.Range((int)(-15 / createInterval), (int)(15 / createInterval)) * createInterval;
             float randomY = Random.Range((int)(-15.0f / createInterval), (int)((-levelConfig.levelLength + 5.0f) / createInterval)) * createInterval;
-
+            int valueLayer = (int)(-randomY * 100 % 30000);
+            Debug.Log(valueLayer);
+            _head.sortingOrder = valueLayer;
+            _face.sortingOrder = valueLayer + 1;
             pos = new Vector3(randomX, randomY, randomY * 0.01f);
             var obj = Physics2D.OverlapCircle((Vector2)pos, 3);
             if (obj)
@@ -125,7 +128,6 @@ public class Monster : SceneEntityPool<Monster>, ICanDestroy
             });
         });
         _effectSpriteRenderer.color = _originEffectAlpha;
-        _effectSpriteRenderer.DOFade(0.1f, 3.0f);
         _effectPoint.DOScale(Vector3.one * 2.2f, 0.65f).OnComplete(() =>
         {
             _effectSpriteRenderer.color = new Color(0, 0, 0, 0);

@@ -5485,7 +5485,9 @@ MonoBehaviour:
   addMaxSpeed: 12
   addSpeed: 20
   changeSpeed: 2
-  _faceStyleSprites: []
+  _faceStyleSprites:
+  - {fileID: 21300000, guid: 56a35d59e92296544b1abde606166338, type: 3}
+  - {fileID: 21300000, guid: b7f8188ec91b94b41aab137dc456510b, type: 3}
   winState: 0
 --- !u!50 &2778136125620066815
 Rigidbody2D:

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -93,11 +94,20 @@ public class BodyController
     {
         _deathEffect.Play();
     }
+
+    public void NoramlFace()
+    {
+        _faceSpriteR.sprite = _faceStyleSprites[0];
+    }
+
+    public void FireFace()
+    {
+        _faceSpriteR.sprite = _faceStyleSprites[1];
+    }
 }
 
 public class PlayerManager : MonoBehaviour
 {
-    public bool unconqueredState = false;
     private TrailRenderer _trailRenderer;
     private BodyController _bodyController = new BodyController();
     [Header("Paramaters")]
@@ -253,7 +263,7 @@ public class PlayerManager : MonoBehaviour
             _direction = -_direction;
             _bodyController.ChangeLeg(_direction);
             _bodyController.TurningEffect(true);
-            if (!winState)
+            if (!winState && GameManager.Instance.GetSave().musicSetting)
                 _audioSource.UnPause();
         }
         else
@@ -269,7 +279,7 @@ public class PlayerManager : MonoBehaviour
     /// <param name="hurtType">场景伤害不可被护盾减免</param>
     public void PlayerHurt(DamageType hurtType = DamageType.EntityDamage, GameObject damageOrigin = null)
     {
-        if (winState || unconqueredState)
+        if (winState || GameManager.Instance.unconqueredState || !IsActive())
             return;
 
         if (currentArmor > 0 && hurtType == DamageType.EntityDamage)
@@ -313,13 +323,15 @@ public class PlayerManager : MonoBehaviour
             _bodyController.SetMainColor(GameManager.Instance.GetCurrentLevelColor());
             SetTrailColor(GameManager.Instance.GetCurrentLevelColor());
             _bodyController.FootEffect(false);
+            _bodyController.NoramlFace();
         }
         else if (value >= 3)
         {
             if (value == 3)
             {
+                _bodyController.FireFace();
                 AudioManager.Instance.PlaySoundEffect(3);
-                Debug.Log("player ");
+                //Debug.Log("player ");
             }
             _bodyController.SetMainColor(GameManager.Instance.GetMotivationalColor(value));
             SetTrailColor(GameManager.Instance.GetMotivationalColor(value));

@@ -20,6 +20,7 @@ public class UnityAdsManager : MonoBehaviour, IUnityAdsInitializationListener, I
         {
             Debug.Log("Ads Initialing");
             Advertisement.Initialize(_gameId, _testMode, this);
+            Debug.Log("Ads Initialing over?");
         }
         else
         {

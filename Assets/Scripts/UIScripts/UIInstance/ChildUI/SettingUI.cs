@@ -58,6 +58,7 @@ public class SettingUI : UIBase
     [SerializeField] private SettingButton _motivationalButton;
     [SerializeField] private SettingButton _languageButton;
     [SerializeField] private SettingButton _adsButton;
+    [SerializeField] private SettingButton _unconqueredButton;
     //private Button settingButton;
     private RectTransform _rectTransforom;
     [Header("Animation")]
@@ -76,6 +77,7 @@ public class SettingUI : UIBase
         _motivationalButton.Init("MotivationalButton", _transform, gameSave.motivationalSetting);
         _languageButton.Init("LanguageButton", _transform, gameSave.isChinese);
         _adsButton.Init("AdsButton", _transform, new ButtonState());
+        _unconqueredButton.Init("UnconqueredButton", _transform, GameManager.Instance.unconqueredState);
 
         _languageButton.onClick += GameManager.Instance.ChangeLanguage;
         _soundButton.onClick += ChangeMusic;
@@ -102,6 +104,7 @@ public class SettingUI : UIBase
         _soundButton.SetPosState(_listOpen);
         _languageButton.SetPosState(_listOpen);
         _adsButton.SetPosState(_listOpen);
+        _unconqueredButton.SetPosState(_listOpen);
     }
     public override void Switch(bool open, float fadeTime)
     {

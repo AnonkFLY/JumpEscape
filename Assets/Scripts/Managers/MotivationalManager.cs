@@ -6,7 +6,7 @@ using UnityEngine;
 public class MotivationalManager
 {
     //rating效果只持续3s
-    private readonly float ratingEffectTimer = 2.0f;
+    private readonly float ratingEffectTimer = 5.5f;
     public float ratingTimer = 0.0f;
     //得分
     public int currentRating = 1;

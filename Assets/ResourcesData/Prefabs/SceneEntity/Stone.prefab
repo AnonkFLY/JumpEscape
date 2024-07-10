@@ -168,8 +168,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   entityName: Stone
-  minSpeed: {x: 5, y: 8}
-  maxSpeed: {x: 25, y: 10}
+  minSpeed: {x: 10, y: 8}
+  maxSpeed: {x: 18, y: 10}
   rSpeed: 180
   createScalue: 2
 --- !u!1 &2071485132201436461
